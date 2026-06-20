@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuadly — Calculadora de Presupuesto</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <img src="assets/logo.png" alt="Cuadly" class="logo" onerror="this.style.display='none'">
+      <div class="header-text">
+        <span class="brand">Cuadly</span>
+        <span class="subtitle">Calculadora de Presupuesto</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="mode-toggle-wrapper">
+      <div class="mode-toggle" role="group" aria-label="Tipo de cliente">
+        <button class="mode-btn active" data-mode="individual">Residencia individual</button>
+        <button class="mode-btn" data-mode="grupo">Grupo de residencias</button>
+      </div>
+    </div>
+
+    <div class="calculator-grid">
+
+      <!-- Formulario -->
+      <section class="card form-card">
+        <h2 class="card-title">Datos del cliente</h2>
+
+        <!-- Modo individual -->
+        <div id="individual-fields">
+          <div class="field-group">
+            <label for="nombre">Nombre de la residencia *</label>
+            <input type="text" id="nombre" placeholder="Ej: Residencia Los Pinos" autocomplete="organization">
+          </div>
+          <div class="field-group">
+            <label for="contacto">Persona de contacto *</label>
+            <input type="text" id="contacto" placeholder="Nombre y apellidos" autocomplete="name">
+          </div>
+          <div class="field-group field-row">
+            <div>
+              <label for="email">Email</label>
+              <input type="email" id="email" placeholder="contacto@residencia.es" autocomplete="email">
+            </div>
+            <div>
+              <label for="telefono">Teléfono</label>
+              <input type="tel" id="telefono" placeholder="+34 600 000 000" autocomplete="tel">
+            </div>
+          </div>
+          <div class="field-group">
+            <label for="empleados">Número de empleados *</label>
+            <input type="number" id="empleados" min="1" max="999" placeholder="Ej: 30" class="input-empleados">
+          </div>
+          <div class="field-group">
+            <label>Plan de pago</label>
+            <div class="plan-toggle" role="group">
+              <button type="button" class="plan-btn" data-plan="mensual">
+                <span class="plan-label">Mensual</span>
+                <span class="plan-sub">Sin compromiso</span>
+              </button>
+              <button type="button" class="plan-btn" data-plan="semestral">
+                <span class="plan-label">Semestral</span>
+                <span class="plan-sub green">1 mes gratis</span>
+              </button>
+              <button type="button" class="plan-btn active" data-plan="anual">
+                <span class="plan-label">Anual</span>
+                <span class="plan-sub green">2 meses gratis</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modo grupo -->
+        <div id="grupo-fields" style="display:none">
+          <div class="field-group">
+            <label for="nombre-grupo">Nombre del grupo *</label>
+            <input type="text" id="nombre-grupo" placeholder="Ej: Grupo Vitalia" autocomplete="organization">
+          </div>
+          <div class="field-group">
+            <label for="contacto-grupo">Persona de contacto *</label>
+            <input type="text" id="contacto-grupo" placeholder="Nombre y apellidos" autocomplete="name">
+          </div>
+          <div class="field-group field-row">
+            <div>
+              <label for="email-grupo">Email</label>
+              <input type="email" id="email-grupo" placeholder="contacto@grupo.es" autocomplete="email">
+            </div>
+            <div>
+              <label for="telefono-grupo">Teléfono</label>
+              <input type="tel" id="telefono-grupo" placeholder="+34 600 000 000" autocomplete="tel">
+            </div>
+          </div>
+          <div class="field-group">
+            <label>Residencias del grupo * <span class="field-note">(mínimo 2)</span></label>
+            <div class="residencias-wrapper">
+              <table class="residencias-table">
+                <thead>
+                  <tr>
+                    <th>Nombre de la residencia</th>
+                    <th class="col-emp">Empleados</th>
+                    <th class="col-del"></th>
+                  </tr>
+                </thead>
+                <tbody id="residencias-tbody"></tbody>
+              </table>
+              <button type="button" id="add-residencia" class="btn-add">+ Añadir residencia</button>
+            </div>
+          </div>
+          <div class="group-plan-note">
+            <span class="badge-dark">Plan Anual obligatorio</span>
+            El descuento de grupo requiere contrato anual — incluye <strong>2 meses gratis</strong>.
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Panel de resultados -->
+      <section class="card results-card">
+        <h2 class="card-title">Presupuesto</h2>
+
+        <div id="result-placeholder" class="result-placeholder">
+          <div class="placeholder-icon">€</div>
+          <p>Introduce los datos del cliente<br>para ver el presupuesto</p>
+        </div>
+
+        <div id="result-content" style="display:none"></div>
+
+        <div class="pdf-btn-wrapper">
+          <button id="pdf-btn" class="btn-primary" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Generar presupuesto PDF
+          </button>
+          <p class="pdf-note">Disponible cuando los campos marcados con * estén completos</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ── PDF Template (2 páginas) ──────────────────────────────────────────────
+       Página 1: Portada (imagen fija + nombre cliente superpuesto)
+       Página 2: Propuesta de precios (datos del cliente + desglose + total)
+       Requisito: colocar assets/portada.png y assets/cuadly-logo.png antes de usar.
+       Usar Live Server o Vercel para que las imágenes carguen correctamente en el PDF.
+  ──────────────────────────────────────────────────────────────────────────── -->
+  <div id="pdf-template" style="display:none; font-family:Arial,Helvetica,sans-serif; color:#1e293b; line-height:1.5;">
+
+    <!-- ── PÁGINA 1: Portada ──────────────────────────────────────────────── -->
+    <div style="position:relative; width:210mm; height:297mm; overflow:hidden; background:#f3f4f6;">
+      <!-- Imagen de portada (assets/portada.png) -->
+      <img src="assets/portada.png" alt=""
+           style="width:100%; height:100%; object-fit:cover; display:block;">
+      <!-- Nombre del cliente superpuesto entre el título y la ilustración -->
+      <div id="pdf-cover-client"
+           style="position:absolute; top:42%; left:0; right:0; text-align:center;
+                  font-size:15px; font-weight:700; color:#2B2FDE; letter-spacing:-0.2px;">
+      </div>
+    </div>
+
+    <!-- ── PÁGINA 2: Propuesta de precios ────────────────────────────────── -->
+    <div style="width:210mm; min-height:297mm; padding:18mm 16mm 14mm;
+                box-sizing:border-box; background:white; font-size:13px;">
+
+      <!-- Cabecera -->
+      <div style="display:flex; justify-content:space-between; align-items:center;
+                  padding-bottom:10px; border-bottom:2px solid #2B2FDE; margin-bottom:18px;">
+        <img src="assets/cuadly-logo.png" alt="Cuadly" style="height:24px; width:auto;">
+        <div style="font-size:12px; font-weight:600; color:#1e293b;">Propuesta de colaboración</div>
+        <div style="font-size:11px; color:#64748b; text-align:right;" id="pdf-fecha"></div>
+      </div>
+
+      <!-- Datos del cliente -->
+      <div style="margin-bottom:18px; padding-bottom:14px; border-bottom:1px solid #e2e8f0;">
+        <div style="font-size:10px; font-weight:700; text-transform:uppercase;
+                    letter-spacing:.08em; color:#94a3b8; margin-bottom:5px;">Preparado para</div>
+        <div id="pdf-cliente-nombre"
+             style="font-size:17px; font-weight:700; color:#1e293b; margin-bottom:5px;"></div>
+        <div style="font-size:12px; color:#475569;">
+          <span id="pdf-cliente-contacto"></span>
+          <span id="pdf-cliente-email"
+                style="margin-left:14px; padding-left:14px; border-left:1px solid #e2e8f0;"></span>
+          <span id="pdf-cliente-tel"
+                style="margin-left:14px; padding-left:14px; border-left:1px solid #e2e8f0;"></span>
+        </div>
+      </div>
+
+      <!-- Desglose de precios -->
+      <div style="margin-bottom:16px;">
+        <div style="font-size:10px; font-weight:700; text-transform:uppercase;
+                    letter-spacing:.08em; color:#94a3b8; margin-bottom:10px;">Desglose de precios</div>
+        <div id="pdf-breakdown"></div>
+      </div>
+
+      <!-- Resumen total -->
+      <div id="pdf-total-section"
+           style="background:#eff6ff; border-radius:8px; padding:16px 20px;
+                  margin-bottom:20px; border-left:4px solid #2B2FDE;"></div>
+
+      <!-- Pie de página -->
+      <div style="font-size:10px; color:#94a3b8; border-top:1px solid #e2e8f0;
+                  padding-top:12px; display:flex; justify-content:space-between;">
+        <span>Presupuesto válido durante 30 días desde la fecha de emisión.</span>
+        <span>cuadly.com</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="pricing.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

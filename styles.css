@@ -1,0 +1,478 @@
+/* styles.css — Cuadly Calculadora de Presupuesto */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --primary:    #1e3a5f;
+  --primary-dk: #152a47;
+  --accent:     #2563eb;
+  --accent-lt:  #dbeafe;
+  --green:      #059669;
+  --green-lt:   #d1fae5;
+  --red-lt:     #fee2e2;
+  --red:        #dc2626;
+  --text:       #1e293b;
+  --muted:      #64748b;
+  --border:     #e2e8f0;
+  --bg:         #f8fafc;
+  --white:      #ffffff;
+  --shadow:     0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:  0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.05);
+  --radius:     10px;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+.site-header {
+  background: var(--primary);
+  color: var(--white);
+  padding: 14px 24px;
+  box-shadow: var(--shadow-md);
+}
+.header-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.logo { height: 36px; width: auto; }
+.header-text { display: flex; flex-direction: column; gap: 1px; }
+.brand   { font-size: 18px; font-weight: 700; letter-spacing: .04em; }
+.subtitle { font-size: 12px; opacity: .7; letter-spacing: .02em; }
+
+/* ── Main layout ──────────────────────────────────────────────────────────── */
+
+.main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 28px 16px 56px;
+}
+
+/* ── Mode toggle ──────────────────────────────────────────────────────────── */
+
+.mode-toggle-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+.mode-toggle {
+  display: flex;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 4px;
+  gap: 4px;
+  box-shadow: var(--shadow);
+}
+.mode-btn {
+  padding: 9px 22px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--muted);
+  background: transparent;
+  transition: background .15s, color .15s;
+}
+.mode-btn.active {
+  background: var(--primary);
+  color: var(--white);
+}
+.mode-btn:hover:not(.active) {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ── Two-column grid ──────────────────────────────────────────────────────── */
+
+.calculator-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── Cards ────────────────────────────────────────────────────────────────── */
+
+.card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  margin: 0 0 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--primary);
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Form fields ──────────────────────────────────────────────────────────── */
+
+.field-group { margin-bottom: 16px; }
+.field-group label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.field-note { font-weight: 400; color: var(--muted); font-size: 12px; }
+
+.field-group input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--white);
+  transition: border-color .15s, box-shadow .15s;
+  outline: none;
+}
+.field-group input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+}
+.input-empleados {
+  max-width: 140px !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  text-align: center;
+  color: var(--primary) !important;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Plan toggle ──────────────────────────────────────────────────────────── */
+
+.plan-toggle {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.plan-btn {
+  padding: 11px 8px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: var(--white);
+  cursor: pointer;
+  text-align: center;
+  transition: border-color .15s, background .15s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.plan-btn.active { border-color: var(--accent); background: var(--accent-lt); }
+.plan-btn:hover:not(.active) { border-color: #94a3b8; }
+.plan-label { font-size: 13px; font-weight: 600; color: var(--text); }
+.plan-sub   { font-size: 11px; color: var(--muted); }
+.plan-sub.green { color: var(--green); font-weight: 600; }
+
+/* ── Group residencias table ──────────────────────────────────────────────── */
+
+.residencias-wrapper {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.residencias-table { width: 100%; border-collapse: collapse; }
+.residencias-table thead { background: var(--bg); }
+.residencias-table th {
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: left;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  border-bottom: 1px solid var(--border);
+}
+.col-emp { width: 88px; }
+.col-del { width: 38px; }
+.residencias-table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+.residencias-table tr:last-child td { border-bottom: none; }
+.residencias-table input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: 13px;
+  color: var(--text);
+  outline: none;
+  background: var(--white);
+  transition: border-color .12s, box-shadow .12s;
+}
+.residencias-table input[type="number"] { text-align: center; }
+.residencias-table input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(37,99,235,.1);
+}
+
+.btn-remove {
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: var(--red-lt);
+  color: var(--red);
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 17px;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .12s;
+}
+.btn-remove:hover { background: #fecaca; }
+
+.btn-add {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .12s;
+  text-align: left;
+  padding-left: 14px;
+}
+.btn-add:hover { background: var(--accent-lt); }
+
+.group-plan-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #78350f;
+  line-height: 1.4;
+}
+.badge-dark {
+  display: inline-block;
+  background: var(--primary);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Results panel ────────────────────────────────────────────────────────── */
+
+.result-placeholder {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.placeholder-icon {
+  font-size: 52px;
+  font-weight: 800;
+  color: var(--border);
+  line-height: 1;
+  margin-bottom: 14px;
+  font-family: Georgia, serif;
+}
+
+/* ── Breakdown ────────────────────────────────────────────────────────────── */
+
+.result-breakdown { margin-bottom: 20px; }
+.result-breakdown h3 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+  gap: 8px;
+}
+.breakdown-row:last-child { border-bottom: none; }
+.breakdown-row.total {
+  font-weight: 700;
+  font-size: 15px;
+  border-top: 2px solid var(--border);
+  border-bottom: none;
+  margin-top: 4px;
+  padding-top: 10px;
+}
+.breakdown-row.muted { color: var(--muted); font-size: 13px; font-style: italic; }
+
+/* ── Plan summary (destacado) ─────────────────────────────────────────────── */
+
+.plan-summary {
+  background: var(--primary);
+  color: var(--white);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  margin-bottom: 18px;
+}
+.plan-summary-label  { font-size: 12px; opacity: .75; margin-bottom: 4px; }
+.plan-summary-price  { font-size: 34px; font-weight: 700; line-height: 1.1; }
+.plan-summary-period { font-size: 13px; opacity: .8; margin-top: 3px; }
+.plan-summary-badge  {
+  display: inline-block;
+  background: var(--green);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 10px;
+  margin-top: 10px;
+}
+
+/* ── Plan comparison ──────────────────────────────────────────────────────── */
+
+.plan-comparison { margin-bottom: 20px; }
+.plan-comparison h3 {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+.plan-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 7px;
+  margin-bottom: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background .12s;
+}
+.plan-row:hover   { background: var(--bg); }
+.plan-row.active  { background: var(--accent-lt); font-weight: 600; }
+.plan-row-name    { display: flex; align-items: center; gap: 8px; }
+.badge-small {
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--green-lt);
+  color: var(--green);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+/* ── Group discount block ─────────────────────────────────────────────────── */
+
+.discount-block {
+  background: var(--green-lt);
+  border: 1px solid #a7f3d0;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+.discount-block-title { font-weight: 700; color: var(--green); margin-bottom: 2px; }
+
+/* ── Group results table ──────────────────────────────────────────────────── */
+
+.group-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; font-size: 14px; }
+.group-table thead { border-bottom: 2px solid var(--border); }
+.group-table th { padding: 5px 8px; text-align: left; font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .04em; }
+.group-table td { padding: 7px 8px; border-bottom: 1px solid var(--border); }
+.group-table tr:last-child td { border-bottom: none; }
+.group-table .right { text-align: right; }
+.group-table tfoot td { font-weight: 700; border-top: 2px solid var(--border); border-bottom: none; padding-top: 9px; }
+
+/* ── PDF button ───────────────────────────────────────────────────────────── */
+
+.pdf-btn-wrapper {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.btn-primary {
+  width: 100%;
+  padding: 13px 20px;
+  background: var(--primary);
+  color: var(--white);
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  transition: background .15s, transform .1s, box-shadow .15s;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--primary-dk);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(30,58,95,.25);
+}
+.btn-primary:disabled {
+  background: #cbd5e1;
+  color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.pdf-note {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  margin: 8px 0 0;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 740px) {
+  .calculator-grid { grid-template-columns: 1fr; }
+  .field-row       { grid-template-columns: 1fr; }
+  .plan-toggle     { grid-template-columns: 1fr; }
+}
+
+/* ── Print / PDF (estilos a definir en sesión dedicada) ───────────────────── */
+
+@media print {
+  body { background: white; }
+  .site-header,
+  .main { display: none; }
+  #pdf-template { display: block !important; }
+}
