@@ -337,8 +337,11 @@ function generatePDF() {
     <div style="font-size:13px;color:#64748b;margin-top:3px;">${periodNote}</div>
   `;
 
-  // Mostrar template, generar PDF, ocultar template
+  // Mostrar template en posición fija (0,0) para evitar offset de scroll en html2canvas
   const template = document.getElementById('pdf-template');
+  template.style.position = 'fixed';
+  template.style.top = '0';
+  template.style.left = '0';
   template.style.display = 'block';
 
   const safeName = nombre
@@ -354,13 +357,17 @@ function generatePDF() {
   const opt = {
     margin: 0,
     filename,
-    image:       { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2, useCORS: true, allowTaint: false, logging: false },
-    jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    image:       { type: 'jpeg', quality: 0.92 },
+    html2canvas: { scale: 2, useCORS: true, allowTaint: false, logging: false, scrollX: 0, scrollY: 0 },
+    jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak:   { mode: ['css', 'legacy'] }
   };
 
   html2pdf().set(opt).from(template).save().then(() => {
     template.style.display = 'none';
+    template.style.position = '';
+    template.style.top = '';
+    template.style.left = '';
     pdfBtn.innerHTML = originalHTML;
     pdfBtn.disabled  = !isFormValid();
   });
