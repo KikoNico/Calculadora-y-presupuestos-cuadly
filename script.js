@@ -305,6 +305,16 @@ function generatePDF() {
   document.getElementById('pdf-cliente-email').textContent    = email;
   document.getElementById('pdf-cliente-tel').textContent      = tel;
 
+  // Poblar páginas 3 y 4
+  document.getElementById('pdf-fecha-p3').textContent         = fecha;
+  document.getElementById('pdf-plan-tabla').innerHTML          = buildPlanTablaHTML(result, plan);
+  document.getElementById('pdf-commitment-text').innerHTML     = buildCommitmentHTML(plan);
+  document.getElementById('pdf-fecha-p4').textContent          = fecha;
+  document.getElementById('pdf-firmante-empresa').textContent  = nombre;
+  document.getElementById('pdf-firmante-email').textContent    = email;
+  document.getElementById('pdf-firmante-contacto').textContent = contacto;
+  document.getElementById('pdf-firmante-fecha').textContent    = fecha;
+
   // Poblar desglose
   const breakdownEl = document.getElementById('pdf-breakdown');
   breakdownEl.innerHTML = buildBreakdownHTML(result, residencias);
@@ -406,6 +416,57 @@ function buildBreakdownHTML(result, residencias) {
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
+}
+
+// ── Helpers PDF páginas 3 y 4 ────────────────────────────────────────────────
+
+function buildPlanTablaHTML(result, plan) {
+  const planes = [
+    { key: 'mensual',   label: 'Mensual',   mult: 1,    meses: 1,  periodo: '/mes',     beneficio: 'Sin compromiso' },
+    { key: 'semestral', label: 'Semestral', mult: 5.4,  meses: 6,  periodo: '/6 meses', beneficio: '1 mes gratis'   },
+    { key: 'anual',     label: 'Anual',     mult: 9.96, meses: 12, periodo: '/año',     beneficio: '2 meses gratis' }
+  ];
+  const thStyle = 'padding:7px 10px; background:#f8fafc; border:1px solid #e2e8f0; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#94a3b8; text-align:left;';
+
+  const rows = planes.map(p => {
+    const total  = result.totalMensual * p.mult;
+    const porMes = fmt(total / p.meses);
+    const active = p.key === plan;
+    const bg     = active ? 'background:#eff6ff;' : '';
+    const fw     = active ? 'font-weight:600;' : '';
+    const td     = `padding:8px 10px; border:1px solid #e2e8f0; font-size:12px; ${bg} ${fw}`;
+    const badge  = active
+      ? `<span style="background:#2B2FDE;color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;">Seleccionado</span>`
+      : '';
+    return `<tr>
+      <td style="${td}">${p.label}${badge}</td>
+      <td style="${td}">${porMes}/mes</td>
+      <td style="${td} text-align:right;">${fmt(total)} ${p.periodo}</td>
+      <td style="${td}"><span style="color:#059669;font-size:11px;">${p.beneficio}</span></td>
+    </tr>`;
+  }).join('');
+
+  return `<table width="100%" style="border-collapse:collapse;">
+    <thead><tr>
+      <th style="${thStyle}">Plan</th>
+      <th style="${thStyle}">€/mes</th>
+      <th style="${thStyle} text-align:right;">Total período</th>
+      <th style="${thStyle}">Beneficio</th>
+    </tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+function buildCommitmentHTML(plan) {
+  const textos = {
+    mensual: `<p style="margin:0 0 8px;">Sin período de permanencia. El contrato puede cancelarse en cualquier momento con <strong>30 días de preaviso</strong> sin penalización.</p>
+<p style="margin:0;">Cuadly se compromete a mantener los precios acordados durante todo el tiempo que el contrato esté vigente.</p>`,
+    semestral: `<p style="margin:0 0 8px;">Período de permanencia de <strong>6 meses</strong> desde la fecha de inicio. En caso de cancelación anticipada, las cuotas restantes hasta el fin del período serán exigibles.</p>
+<p style="margin:0;">Cuadly se compromete a mantener los precios acordados durante todo el período semestral contratado.</p>`,
+    anual: `<p style="margin:0 0 8px;">Período de permanencia de <strong>12 meses</strong> desde la fecha de inicio. En caso de cancelación anticipada, las cuotas restantes hasta el fin del período serán exigibles.</p>
+<p style="margin:0;">Cuadly garantiza los precios acordados durante los 12 meses del contrato. Al finalizar el período, el contrato se renovará en las condiciones vigentes salvo comunicación contraria con 30 días de antelación.</p>`
+  };
+  return textos[plan] || textos.mensual;
 }
 
 // ── Inicialización ────────────────────────────────────────────────────────────
