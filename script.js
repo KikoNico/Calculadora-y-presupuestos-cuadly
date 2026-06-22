@@ -346,6 +346,7 @@ function generatePDF() {
   const clone = template.cloneNode(true);
   clone.style.display = 'block';
   document.body.insertBefore(clone, document.body.firstChild);
+  window.scrollTo(0, 0);
 
   const safeName = nombre
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -361,7 +362,7 @@ function generatePDF() {
     margin: 0,
     filename,
     image:       { type: 'jpeg', quality: 0.92 },
-    html2canvas: { scale: 2, useCORS: true, allowTaint: false, logging: false, windowWidth: 794 },
+    html2canvas: { scale: 2, useCORS: true, allowTaint: false, logging: false, scrollX: 0, scrollY: 0, windowWidth: 794 },
     jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
     pagebreak:   { mode: ['css', 'legacy'] }
   };
