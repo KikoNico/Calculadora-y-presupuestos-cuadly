@@ -337,12 +337,14 @@ function generatePDF() {
     <div style="font-size:13px;color:#64748b;margin-top:3px;">${periodNote}</div>
   `;
 
-  // Mostrar template en posición fija (0,0) para evitar offset de scroll en html2canvas
   const template = document.getElementById('pdf-template');
-  template.style.position = 'fixed';
+  template.style.position = 'absolute';
   template.style.top = '0';
   template.style.left = '0';
+  template.style.zIndex = '9999';
   template.style.display = 'block';
+  const savedScrollY = window.scrollY;
+  window.scrollTo(0, 0);
 
   const safeName = nombre
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -376,6 +378,8 @@ function generatePDF() {
           template.style.position = '';
           template.style.top = '';
           template.style.left = '';
+          template.style.zIndex = '';
+          window.scrollTo(0, savedScrollY);
           pdfBtn.innerHTML = originalHTML;
           pdfBtn.disabled  = !isFormValid();
         });
