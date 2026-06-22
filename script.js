@@ -337,54 +337,14 @@ function generatePDF() {
     <div style="font-size:13px;color:#64748b;margin-top:3px;">${periodNote}</div>
   `;
 
-  const template    = document.getElementById('pdf-template');
-  const siteHeader  = document.querySelector('.site-header');
-  const mainEl      = document.querySelector('main');
+  document.getElementById('pdf-template').style.display = 'block';
 
-  siteHeader.style.display = 'none';
-  mainEl.style.display     = 'none';
-  const clone = template.cloneNode(true);
-  clone.style.display = 'block';
-  document.body.insertBefore(clone, document.body.firstChild);
-  window.scrollTo(0, 0);
+  window.addEventListener('afterprint', function restore() {
+    document.getElementById('pdf-template').style.display = 'none';
+    window.removeEventListener('afterprint', restore);
+  }, { once: true });
 
-  const safeName = nombre
-    .normalize('NFD').replace(/[̀-ͯ]/g, '')
-    .replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
-  const fechaISO = new Date().toISOString().split('T')[0];
-  const filename = `presupuesto-${safeName}-${fechaISO}.pdf`;
-
-  const originalHTML = pdfBtn.innerHTML;
-  pdfBtn.disabled = true;
-  pdfBtn.textContent = 'Generando PDF…';
-
-  const opt = {
-    margin: 0,
-    filename,
-    image:       { type: 'jpeg', quality: 0.92 },
-    html2canvas: { scale: 2, useCORS: true, allowTaint: false, logging: false, scrollX: 0, scrollY: 0, windowWidth: 794 },
-    jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak:   { mode: ['css', 'legacy'] }
-  };
-
-  const imgs = Array.from(clone.querySelectorAll('img'));
-  const imagesReady = imgs.map(img =>
-    img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })
-  );
-
-  Promise.all([...imagesReady, document.fonts.ready]).then(() => {
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        html2pdf().set(opt).from(clone).save().then(() => {
-          document.body.removeChild(clone);
-          siteHeader.style.display = '';
-          mainEl.style.display     = '';
-          pdfBtn.innerHTML = originalHTML;
-          pdfBtn.disabled  = !isFormValid();
-        });
-      });
-    });
-  });
+  window.print();
 }
 
 function buildBreakdownHTML(result, residencias) {
