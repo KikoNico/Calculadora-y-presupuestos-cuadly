@@ -296,7 +296,7 @@ function generatePDF() {
     .toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
 
   // Poblar portada (página 1)
-  document.getElementById('pdf-cover-client').textContent = `Cuadly — ${nombre}`;
+  document.getElementById('pdf-cover-client').textContent = `Cuadly - ${nombre}`;
 
   // Poblar cabecera y datos cliente (página 2)
   document.getElementById('pdf-fecha').textContent = `${fecha} · Válido hasta: ${validez}`;
@@ -308,8 +308,7 @@ function generatePDF() {
   // Poblar páginas 3 y 4
   document.getElementById('pdf-fecha-p3').textContent         = fecha;
   document.getElementById('pdf-plan-tabla').innerHTML          = buildPlanTablaHTML(result, plan);
-  document.getElementById('pdf-commitment-text').innerHTML     = buildCommitmentHTML(plan);
-  document.getElementById('pdf-fecha-p4').textContent          = fecha;
+document.getElementById('pdf-fecha-p4').textContent          = fecha;
   document.getElementById('pdf-firmante-empresa').textContent  = nombre;
   document.getElementById('pdf-firmante-email').textContent    = email;
   document.getElementById('pdf-firmante-contacto').textContent = contacto;
@@ -436,18 +435,6 @@ function buildPlanTablaHTML(result, plan) {
     </tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
-}
-
-function buildCommitmentHTML(plan) {
-  const textos = {
-    mensual: `<p style="margin:0 0 8px;">Sin período de permanencia. El contrato puede cancelarse en cualquier momento con <strong>30 días de preaviso</strong> sin penalización.</p>
-<p style="margin:0;">Cuadly se compromete a mantener los precios acordados durante todo el tiempo que el contrato esté vigente.</p>`,
-    semestral: `<p style="margin:0 0 8px;">Período de permanencia de <strong>6 meses</strong> desde la fecha de inicio. En caso de cancelación anticipada, las cuotas restantes hasta el fin del período serán exigibles.</p>
-<p style="margin:0;">Cuadly se compromete a mantener los precios acordados durante todo el período semestral contratado.</p>`,
-    anual: `<p style="margin:0 0 8px;">Período de permanencia de <strong>12 meses</strong> desde la fecha de inicio. En caso de cancelación anticipada, las cuotas restantes hasta el fin del período serán exigibles.</p>
-<p style="margin:0;">Cuadly garantiza los precios acordados durante los 12 meses del contrato. Al finalizar el período, el contrato se renovará en las condiciones vigentes salvo comunicación contraria con 30 días de antelación.</p>`
-  };
-  return textos[plan] || textos.mensual;
 }
 
 // ── Inicialización ────────────────────────────────────────────────────────────
