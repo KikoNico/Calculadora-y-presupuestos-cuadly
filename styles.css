@@ -471,6 +471,7 @@ body {
 /* ── Print / PDF (estilos a definir en sesión dedicada) ───────────────────── */
 
 @media print {
+  @page { margin: 0; size: A4; }
   body { background: white; }
   .site-header,
   .main { display: none; }
