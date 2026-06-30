@@ -165,7 +165,7 @@ function periodText(plan, total) {
 
 function updateResults() {
   const residencias = getResidencias();
-  const plan = currentMode === 'grupo' ? 'anual' : currentPlan;
+  const plan = currentPlan;
   const hasData = residencias.length > 0 && residencias.every(r => r.empleados > 0);
 
   if (!hasData) {
@@ -237,6 +237,9 @@ function renderIndividual(result, emp, plan) {
 function renderGroup(result, residencias) {
   const discountPct = Math.round(result.groupDiscount * 100);
   const numRes = residencias.length;
+  const plan = result.plan;
+  const planLabels = { mensual: 'Mensual', semestral: 'Semestral', anual: 'Anual' };
+  const planBadges = { mensual: '', semestral: '1 mes gratis', anual: '2 meses gratis' };
 
   let html = '<div class="result-breakdown"><h3>Residencias del grupo</h3>';
   html += '<table class="group-table"><thead><tr><th>Residencia</th><th>Emp.</th><th class="right">€/mes</th></tr></thead><tbody>';
@@ -253,18 +256,37 @@ function renderGroup(result, residencias) {
   </tr></tfoot></table></div>`;
 
   if (result.groupDiscount > 0) {
-    const ahorro = result.totalMensual * 9.96 * result.groupDiscount;
+    const ahorro = result.totalMensual * result.mult * result.groupDiscount;
     html += `<div class="discount-block">
       <div class="discount-block-title">Descuento grupo (${numRes} residencias): −${discountPct}%</div>
-      <div>Ahorro anual: ${fmt(ahorro)}</div>
+      <div>Ahorro ${planLabels[plan].toLowerCase()}: ${fmt(ahorro)}</div>
     </div>`;
   }
 
+  const badge = planBadges[plan];
   html += `<div class="plan-summary">
-    <div class="plan-summary-label">Plan Anual — 2 meses gratis</div>
+    <div class="plan-summary-label">${planLabels[plan]}</div>
     <div class="plan-summary-price">${fmt(result.totalPeriodo)}</div>
-    <div class="plan-summary-period">/año &middot; ${fmt(result.totalPeriodo / 12)}/mes de media</div>
+    <div class="plan-summary-period">${periodText(plan, result.totalPeriodo)}</div>
+    ${badge ? `<div class="plan-summary-badge">${badge}</div>` : ''}
   </div>`;
+
+  const allPlans = [
+    { key: 'mensual',   label: 'Mensual',   mult: 1,    badge: '',               period: '/mes'    },
+    { key: 'semestral', label: 'Semestral', mult: 5.4,  badge: '1 mes gratis',   period: '/6 meses' },
+    { key: 'anual',     label: 'Anual',     mult: 9.96, badge: '2 meses gratis', period: '/año'    }
+  ];
+
+  html += '<div class="plan-comparison"><h3>Comparar planes</h3>';
+  allPlans.forEach(p => {
+    const total = result.totalMensual * p.mult * (1 - result.groupDiscount);
+    const active = p.key === plan;
+    html += `<div class="plan-row${active ? ' active' : ''}" onclick="selectPlan('${p.key}')">
+      <span class="plan-row-name">${p.label}${p.badge ? `<span class="badge-small">${p.badge}</span>` : ''}</span>
+      <span>${fmt(total)}<small style="color:var(--muted);font-weight:400;font-size:12px;"> ${p.period}</small></span>
+    </div>`;
+  });
+  html += '</div>';
 
   return html;
 }
@@ -275,7 +297,7 @@ pdfBtn.addEventListener('click', generatePDF);
 
 function generatePDF() {
   const residencias = getResidencias();
-  const plan = currentMode === 'grupo' ? 'anual' : currentPlan;
+  const plan = currentPlan;
   const result = calculatePrice(residencias, plan);
 
   const nombre   = currentMode === 'individual'
@@ -305,10 +327,11 @@ function generatePDF() {
   document.getElementById('pdf-cliente-email').textContent    = email;
   document.getElementById('pdf-cliente-tel').textContent      = tel;
 
-  // Poblar páginas 3 y 4
-  document.getElementById('pdf-fecha-p3').textContent         = fecha;
-  document.getElementById('pdf-plan-tabla').innerHTML          = buildPlanTablaHTML(result, plan);
-document.getElementById('pdf-fecha-p4').textContent          = fecha;
+  // Poblar página 2 (desglose + tabla planes)
+  document.getElementById('pdf-plan-tabla').innerHTML = buildPlanTablaHTML(result);
+
+  // Poblar página 3 (firmante)
+  document.getElementById('pdf-fecha-p3').textContent          = fecha;
   document.getElementById('pdf-firmante-empresa').textContent  = nombre;
   document.getElementById('pdf-firmante-email').textContent    = email;
   document.getElementById('pdf-firmante-contacto').textContent = contacto;
@@ -318,22 +341,18 @@ document.getElementById('pdf-fecha-p4').textContent          = fecha;
   const breakdownEl = document.getElementById('pdf-breakdown');
   breakdownEl.innerHTML = buildBreakdownHTML(result, residencias);
 
-  // Poblar total
-  const planLabels = { mensual: 'Mensual', semestral: 'Semestral (6 meses)', anual: 'Anual' };
+  // Base mensual de referencia (sin plan específico)
   const discountNote = result.groupDiscount > 0
-    ? `<div style="font-size:13px;color:#059669;margin-bottom:6px;">Descuento grupo ${residencias.length} residencias: −${Math.round(result.groupDiscount * 100)}%</div>`
+    ? `<span style="color:#059669;margin-left:10px;font-size:12px;">Descuento de grupo (${residencias.length} res.): −${Math.round(result.groupDiscount * 100)}% aplicado en tabla inferior</span>`
     : '';
-  const periodNote = plan === 'mensual' ? '/mes'
-    : plan === 'semestral' ? `/6 meses (${fmt(result.totalPeriodo / 6)}/mes)`
-    : `/año (${fmt(result.totalPeriodo / 12)}/mes de media)`;
 
   document.getElementById('pdf-total-section').innerHTML = `
-    <div style="font-size:12px;color:#64748b;margin-bottom:4px;">
-      ${planLabels[plan]}${result.groupDiscount > 0 ? ' con descuento de grupo' : ''}
+    <div style="font-size:12px;color:#64748b;margin-bottom:4px;">Precio mensual base</div>
+    <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
+      <span style="font-size:30px;font-weight:700;color:#1e3a5f;line-height:1.1;">${fmt(result.totalMensual)}</span>
+      <span style="font-size:13px;color:#64748b;">/mes · consulta las opciones de pago en la tabla</span>
     </div>
     ${discountNote}
-    <div style="font-size:30px;font-weight:700;color:#1e3a5f;line-height:1.1;">${fmt(result.totalPeriodo)}</div>
-    <div style="font-size:13px;color:#64748b;margin-top:3px;">${periodNote}</div>
   `;
 
   document.getElementById('pdf-template').style.display = 'block';
@@ -400,33 +419,31 @@ function buildBreakdownHTML(result, residencias) {
 
 // ── Helpers PDF páginas 3 y 4 ────────────────────────────────────────────────
 
-function buildPlanTablaHTML(result, plan) {
+function buildPlanTablaHTML(result) {
   const planes = [
-    { key: 'mensual',   label: 'Mensual',   mult: 1,    meses: 1,  periodo: '/mes',     beneficio: 'Sin compromiso' },
-    { key: 'semestral', label: 'Semestral', mult: 5.4,  meses: 6,  periodo: '/6 meses', beneficio: '1 mes gratis'   },
-    { key: 'anual',     label: 'Anual',     mult: 9.96, meses: 12, periodo: '/año',     beneficio: '2 meses gratis' }
+    { label: 'Mensual',   mult: 1,    meses: 1,  periodo: '/mes',     beneficio: 'Sin compromiso' },
+    { label: 'Semestral', mult: 5.4,  meses: 6,  periodo: '/6 meses', beneficio: '1 mes gratis'   },
+    { label: 'Anual',     mult: 9.96, meses: 12, periodo: '/año',     beneficio: '2 meses gratis' }
   ];
   const thStyle = 'padding:7px 10px; background:#f8fafc; border:1px solid #e2e8f0; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#94a3b8; text-align:left;';
+  const td      = 'padding:8px 10px; border:1px solid #e2e8f0; font-size:12px;';
+
+  const groupHeader = result.groupDiscount > 0
+    ? `<div style="font-size:11px;color:#059669;margin-bottom:8px;">Descuento de grupo (${Math.round(result.groupDiscount * 100)}%) incluido en todos los planes</div>`
+    : '';
 
   const rows = planes.map(p => {
-    const total  = result.totalMensual * p.mult;
+    const total  = result.totalMensual * p.mult * (1 - result.groupDiscount);
     const porMes = fmt(total / p.meses);
-    const active = p.key === plan;
-    const bg     = active ? 'background:#eff6ff;' : '';
-    const fw     = active ? 'font-weight:600;' : '';
-    const td     = `padding:8px 10px; border:1px solid #e2e8f0; font-size:12px; ${bg} ${fw}`;
-    const badge  = active
-      ? `<span style="background:#2B2FDE;color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;margin-left:6px;">Seleccionado</span>`
-      : '';
     return `<tr>
-      <td style="${td}">${p.label}${badge}</td>
+      <td style="${td}">${p.label}</td>
       <td style="${td}">${porMes}/mes</td>
       <td style="${td} text-align:right;">${fmt(total)} ${p.periodo}</td>
       <td style="${td}"><span style="color:#059669;font-size:11px;">${p.beneficio}</span></td>
     </tr>`;
   }).join('');
 
-  return `<table width="100%" style="border-collapse:collapse;">
+  return `${groupHeader}<table width="100%" style="border-collapse:collapse;">
     <thead><tr>
       <th style="${thStyle}">Plan</th>
       <th style="${thStyle}">€/mes</th>

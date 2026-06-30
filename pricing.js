@@ -10,10 +10,9 @@ function calcBaseMonthly(employees) {
 }
 
 function calcGroupDiscount(numResidencias) {
-  if (numResidencias >= 31) return 0.30;
-  if (numResidencias >= 16) return 0.25;
-  if (numResidencias >= 7)  return 0.20;
-  if (numResidencias >= 4)  return 0.15;
+  if (numResidencias >= 31) return 0.25;
+  if (numResidencias >= 16) return 0.20;
+  if (numResidencias >= 7)  return 0.15;
   if (numResidencias >= 2)  return 0.10;
   return 0;
 }

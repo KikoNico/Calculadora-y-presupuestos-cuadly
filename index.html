@@ -112,9 +112,22 @@
               <button type="button" id="add-residencia" class="btn-add">+ Añadir residencia</button>
             </div>
           </div>
-          <div class="group-plan-note">
-            <span class="badge-dark">Plan Anual obligatorio</span>
-            El descuento de grupo requiere contrato anual — incluye <strong>2 meses gratis</strong>.
+          <div class="field-group">
+            <label>Plan de pago</label>
+            <div class="plan-toggle" role="group">
+              <button type="button" class="plan-btn" data-plan="mensual">
+                <span class="plan-label">Mensual</span>
+                <span class="plan-sub">Sin compromiso</span>
+              </button>
+              <button type="button" class="plan-btn" data-plan="semestral">
+                <span class="plan-label">Semestral</span>
+                <span class="plan-sub green">1 mes gratis</span>
+              </button>
+              <button type="button" class="plan-btn active" data-plan="anual">
+                <span class="plan-label">Anual</span>
+                <span class="plan-sub green">2 meses gratis</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -163,7 +176,7 @@
       </div>
     </div>
 
-    <!-- ── PÁGINA 2: Propuesta de precios ────────────────────────────────── -->
+    <!-- ── PÁGINA 2: Propuesta de precios + comparativa de planes ──────── -->
     <div style="width:210mm; min-height:297mm; padding:18mm 16mm 14mm;
                 box-sizing:border-box; background:white; font-size:13px; line-height:1.5; page-break-after:always;">
 
@@ -191,27 +204,45 @@
       </div>
 
       <!-- Desglose de precios -->
-      <div style="margin-bottom:16px;">
+      <div style="margin-bottom:14px;">
         <div style="font-size:10px; font-weight:700; text-transform:uppercase;
                     letter-spacing:.08em; color:#94a3b8; margin-bottom:10px;">Desglose de precios</div>
         <div id="pdf-breakdown"></div>
       </div>
 
-      <!-- Resumen total -->
+      <!-- Base mensual de referencia -->
       <div id="pdf-total-section"
-           style="background:#eff6ff; border-radius:8px; padding:16px 20px;
-                  margin-bottom:20px; border-left:4px solid #2B2FDE;"></div>
+           style="background:#eff6ff; border-radius:8px; padding:14px 18px;
+                  margin-bottom:16px; border-left:4px solid #2B2FDE;"></div>
+
+      <!-- Comparativa de planes -->
+      <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+                  color:#94a3b8; margin-bottom:8px;">Opciones de pago</div>
+      <div id="pdf-plan-tabla" style="margin-bottom:16px;"></div>
+
+      <!-- Formación -->
+      <div style="background:#f0fdf4; border-left:4px solid #059669; border-radius:6px;
+                  padding:12px 16px; margin-bottom:14px;">
+        <div style="font-size:12px; font-weight:700; color:#059669; margin-bottom:4px;">
+          Formación y onboarding incluidos — sin coste
+        </div>
+        <div style="font-size:11px; color:#374151;">
+          Cuadly incluye <strong>2 horas de formación gratuita</strong> para la configuración inicial
+          de la plataforma. El equipo acompañará durante la puesta en marcha para garantizar una
+          adopción exitosa desde el primer día.
+        </div>
+      </div>
 
       <!-- Pie de página -->
       <div style="font-size:10px; color:#94a3b8; border-top:1px solid #e2e8f0;
-                  padding-top:12px; display:flex; justify-content:space-between;">
+                  padding-top:10px; display:flex; justify-content:space-between;">
         <span>Presupuesto válido durante 30 días desde la fecha de emisión.</span>
         <span>cuadly.com</span>
       </div>
 
     </div>
 
-    <!-- ── PÁGINA 3: Condiciones de suscripción ──────────────────────────── -->
+    <!-- ── PÁGINA 3: Datos del firmante ──────────────────────────────────── -->
     <div style="width:210mm; height:297mm; padding:18mm 16mm 14mm;
                 box-sizing:border-box; background:white; font-size:13px; line-height:1.5; overflow:hidden; page-break-after:always;">
 
@@ -219,53 +250,8 @@
       <div style="display:flex; justify-content:space-between; align-items:center;
                   padding-bottom:10px; border-bottom:2px solid #2B2FDE; margin-bottom:18px;">
         <img src="assets/cuadly-logo.png" alt="Cuadly" style="height:40px; width:auto;">
-        <div style="font-size:12px; font-weight:600; color:#1e293b;">Condiciones de suscripción</div>
-        <div style="font-size:11px; color:#64748b;" id="pdf-fecha-p3"></div>
-      </div>
-
-      <!-- Intro -->
-      <p style="font-size:12px; color:#475569; margin:0 0 16px;">
-        Cuadly ofrece tres modalidades de pago adaptadas a las necesidades de cada cliente.
-        Todos los planes incluyen acceso completo a la plataforma y soporte técnico.
-      </p>
-
-      <!-- Comparativa de planes (dinámico) -->
-      <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
-                  color:#94a3b8; margin-bottom:10px;">Comparativa de planes</div>
-      <div id="pdf-plan-tabla" style="margin-bottom:20px;"></div>
-
-      <!-- Formación -->
-      <div style="background:#f0fdf4; border-left:4px solid #059669; border-radius:6px;
-                  padding:14px 18px; margin-bottom:20px;">
-        <div style="font-size:12px; font-weight:700; color:#059669; margin-bottom:5px;">
-          Formación y onboarding incluidos — sin coste
-        </div>
-        <div style="font-size:12px; color:#374151;">
-          Cuadly incluye <strong>2 horas de formación gratuita</strong> para la configuración inicial
-          de la plataforma. El equipo de Cuadly acompañará al equipo durante la puesta en marcha
-          para garantizar una adopción exitosa desde el primer día.
-        </div>
-      </div>
-
-      <!-- Nota aceptación -->
-      <div style="font-size:11px; color:#94a3b8; border-top:1px solid #e2e8f0; padding-top:12px;">
-        Al aceptar esta propuesta, el firmante confirma ser representante legal autorizado del cliente
-        y acepta las condiciones descritas. Cuadly se reserva el derecho a actualizar precios para
-        nuevos contratos, manteniéndolos invariables durante el período contratado.
-      </div>
-
-    </div>
-
-    <!-- ── PÁGINA 4: Datos del firmante ──────────────────────────────────── -->
-    <div style="width:210mm; height:297mm; padding:18mm 16mm 14mm;
-                box-sizing:border-box; background:white; font-size:13px; line-height:1.5; overflow:hidden;">
-
-      <!-- Cabecera -->
-      <div style="display:flex; justify-content:space-between; align-items:center;
-                  padding-bottom:10px; border-bottom:2px solid #2B2FDE; margin-bottom:18px;">
-        <img src="assets/cuadly-logo.png" alt="Cuadly" style="height:40px; width:auto;">
         <div style="font-size:12px; font-weight:600; color:#1e293b;">Información de facturación</div>
-        <div style="font-size:11px; color:#64748b;" id="pdf-fecha-p4"></div>
+        <div style="font-size:11px; color:#64748b;" id="pdf-fecha-p3"></div>
       </div>
 
       <!-- Tabla bicolumna cliente / Cuadly -->
@@ -365,6 +351,189 @@
         <span>cuadly.com</span>
       </div>
 
+    </div>
+
+    <!-- ── PÁGINA 4: Mandato SEPA — Acreedor + texto legal + inicio deudor ── -->
+    <div style="width:210mm; height:297mm; padding:0; box-sizing:border-box; background:white;
+                font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#1e293b; page-break-after:always; overflow:hidden;">
+
+      <!-- Cabecera SEPA -->
+      <div style="background:#2B2FDE; color:white; padding:16px 20px; display:flex;
+                  justify-content:space-between; align-items:center; margin-bottom:0;">
+        <img src="assets/cuadly-logo.png" alt="Cuadly"
+             style="height:34px; width:auto; filter:brightness(0) invert(1);"
+             onerror="this.style.display='none'">
+        <div style="text-align:right;">
+          <div style="font-size:14px; font-weight:700; letter-spacing:0.02em;">Mandato de domiciliación SEPA</div>
+          <div style="font-size:11px; opacity:0.85;">Mandato de domiciliación bancaria SEPA</div>
+        </div>
+      </div>
+
+      <div style="padding:16px 20px;">
+
+        <!-- Referencia única -->
+        <div style="margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid #e2e8f0;">
+          <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em;
+                      color:#94a3b8; margin-bottom:4px;">Referencia única del mandato / <em>Mandate reference</em></div>
+          <div style="border-bottom:1px solid #1e293b; height:24px; width:60%;"></div>
+        </div>
+
+        <!-- Acreedor -->
+        <div style="border-left:3px solid #2B2FDE; padding-left:12px; margin-bottom:16px;">
+          <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em;
+                      color:#2B2FDE; margin-bottom:10px;">Para completar por el acreedor / <em>To be completed by the creditor</em></div>
+          <table style="border-collapse:collapse; width:100%; font-size:11px;">
+            <tr>
+              <td style="padding:4px 0; width:42%; color:#64748b; vertical-align:top;">Identificador del acreedor SEPA<br><em style="font-size:10px;">SEPA Creditor Identifier</em></td>
+              <td style="padding:4px 0; vertical-align:top;">
+                <div style="border-bottom:1px solid #1e293b; height:20px; width:85%;"></div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:6px 0; color:#64748b; vertical-align:top;">Nombre del acreedor<br><em style="font-size:10px;">Creditor's Name</em></td>
+              <td style="padding:6px 0; font-weight:600; vertical-align:top;">TECNOLOGIAS DE GESTION LABORAL INTELIGENTE, S.L.</td>
+            </tr>
+            <tr>
+              <td style="padding:4px 0; color:#64748b; vertical-align:top;">NIF/CIF</td>
+              <td style="padding:4px 0; vertical-align:top;">
+                <div style="border-bottom:1px solid #1e293b; height:20px; width:85%;"></div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:4px 0; color:#64748b; vertical-align:top;">Dirección<br><em style="font-size:10px;">Address-Postal Code-City-Country</em></td>
+              <td style="padding:4px 0; vertical-align:top;">
+                <div style="border-bottom:1px solid #1e293b; height:20px; width:85%; margin-bottom:6px;"></div>
+                <div style="border-bottom:1px solid #1e293b; height:20px; width:85%;"></div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Texto legal -->
+        <div style="font-size:10px; color:#475569; line-height:1.55; margin-bottom:16px;
+                    padding:10px 12px; background:#f8fafc; border-radius:4px; border:1px solid #e2e8f0;">
+          Al firmar este mandato, usted autoriza a TECNOLOGIAS DE GESTION LABORAL INTELIGENTE, S.L.
+          (A) a enviar instrucciones a su banco para debitar su cuenta, y (B) a su banco a debitar su
+          cuenta de acuerdo con las instrucciones de TECNOLOGIAS DE GESTION LABORAL INTELIGENTE, S.L.
+          Usted tiene derecho a ser reembolsado por su banco según las condiciones de su contrato.
+          La solicitud de reembolso debe presentarse dentro de las 8 semanas siguientes a la fecha de
+          débito de su cuenta para débitos autorizados, y sin demora y a más tardar dentro de los 13
+          meses en caso de débitos no autorizados.<br><br>
+          <em>By signing this direct debit order, you authorise (A) TECNOLOGIAS DE GESTION LABORAL
+          INTELIGENTE, S.L. to send instructions to your bank to debit your account and (B) your bank
+          to debit your account in accordance with those instructions. You are entitled to a refund from
+          your bank under the terms and conditions of your agreement with the bank. A refund must be
+          claimed within 8 weeks starting from the date on which your account was debited.</em>
+        </div>
+
+        <!-- Inicio sección deudor -->
+        <div style="border-left:3px solid #2B2FDE; padding-left:12px;">
+          <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.07em;
+                      color:#2B2FDE; margin-bottom:10px;">Para completar por el deudor / <em>To be completed by the debtor</em></div>
+          <table style="border-collapse:collapse; width:100%; font-size:11px;">
+            <tr>
+              <td style="padding:5px 0; width:42%; color:#64748b; vertical-align:top;">Nombre / Nombres del deudor<br><em style="font-size:10px;">Name of the debtor(s)</em></td>
+              <td style="padding:5px 0; vertical-align:top;">
+                <div style="border-bottom:1px solid #1e293b; height:22px; width:90%;"></div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:5px 0; color:#64748b; vertical-align:top;">Número de IVA / NIF<br><em style="font-size:10px;">Debtor's VAT No</em></td>
+              <td style="padding:5px 0; vertical-align:top;">
+                <div style="border-bottom:1px solid #1e293b; height:22px; width:90%;"></div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:5px 0; color:#64748b; vertical-align:top;">Dirección<br><em style="font-size:10px;">Address of the debtor</em></td>
+              <td style="padding:5px 0; vertical-align:top;">
+                <div style="border-bottom:1px solid #1e293b; height:22px; width:90%;"></div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── PÁGINA 5: Mandato SEPA — Deudor (continuación) + firma ─────────── -->
+    <div style="width:210mm; height:297mm; padding:0; box-sizing:border-box; background:white;
+                font-family:Arial,Helvetica,sans-serif; font-size:12px; color:#1e293b; overflow:hidden;">
+
+      <!-- Cabecera SEPA -->
+      <div style="background:#2B2FDE; color:white; padding:16px 20px; display:flex;
+                  justify-content:space-between; align-items:center; margin-bottom:0;">
+        <img src="assets/cuadly-logo.png" alt="Cuadly"
+             style="height:34px; width:auto; filter:brightness(0) invert(1);"
+             onerror="this.style.display='none'">
+        <div style="text-align:right;">
+          <div style="font-size:14px; font-weight:700; letter-spacing:0.02em;">Mandato de domiciliación SEPA</div>
+          <div style="font-size:11px; opacity:0.85;">Mandato de domiciliación bancaria SEPA</div>
+        </div>
+      </div>
+
+      <div style="padding:20px 20px;">
+
+        <!-- Resto campos deudor -->
+        <div style="border-left:3px solid #2B2FDE; padding-left:12px; margin-bottom:20px;">
+          <table style="border-collapse:collapse; width:100%; font-size:11px;">
+            <tr>
+              <td style="padding:7px 0; width:42%; color:#64748b; vertical-align:top;">Código postal - Ciudad<br><em style="font-size:10px;">Postal code and city of the debtor</em></td>
+              <td style="padding:7px 0; vertical-align:top;">
+                <div style="border-bottom:1px solid #1e293b; height:22px; width:90%;"></div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:7px 0; color:#64748b; vertical-align:top;">País<br><em style="font-size:10px;">Town - Country of the debtor</em></td>
+              <td style="padding:7px 0; vertical-align:top;">
+                <div style="border-bottom:1px solid #1e293b; height:22px; width:90%;"></div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:7px 0; color:#64748b; vertical-align:top;">Número de cuenta - IBAN<br><em style="font-size:10px;">Account number of the debt - IBAN</em></td>
+              <td style="padding:7px 0; vertical-align:top;">
+                <div style="border-bottom:1px solid #1e293b; height:22px; width:90%;"></div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:7px 0; color:#64748b; vertical-align:top;">Forma de pago<br><em style="font-size:10px;">Type of payment</em></td>
+              <td style="padding:7px 0; vertical-align:top; font-size:11px;">
+                <span style="margin-right:18px;">&#9744; Mensual</span>
+                <span style="margin-right:18px;">&#9744; Semestral</span>
+                <span>&#9744; Anual</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:7px 0; color:#64748b; vertical-align:top;">Fecha - Lugar<br><em style="font-size:10px;">Date, location in which you are signing</em></td>
+              <td style="padding:7px 0; vertical-align:top;">
+                <div style="border-bottom:1px solid #1e293b; height:22px; width:90%;"></div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- Firma -->
+        <div style="border-left:3px solid #2B2FDE; padding-left:12px; margin-bottom:24px;">
+          <div style="font-size:10px; font-weight:700; color:#64748b; margin-bottom:6px;">
+            Por favor, firme aquí / <em>Signature(s) of the debtor(s)</em>
+          </div>
+          <div style="border:1px solid #e2e8f0; border-radius:4px; height:70px; background:#fafafa;"></div>
+        </div>
+
+        <!-- Nota obligatoriedad -->
+        <div style="font-size:10px; color:#64748b; text-align:center; margin-bottom:20px;
+                    font-style:italic; border-top:1px solid #e2e8f0; padding-top:10px;">
+          TODOS LOS CAMPOS SON OBLIGATORIOS. UNA VEZ FIRMADO, ESTE MANDATO DEBE ENVIARSE AL ACREEDOR PARA SU ARCHIVO.<br>
+          <em>ALL GAPS ARE MANDATORY. ONCE THIS MANDATE HAS BEEN SIGNED MUST BE SENT TO CREDITOR FOR STORAGE.</em>
+        </div>
+
+        <!-- Footer con datos acreedor -->
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px;
+                    padding:12px 16px; font-size:10px; color:#475569; text-align:center; line-height:1.6;">
+          <strong style="color:#1e293b;">TECNOLOGIAS DE GESTION LABORAL INTELIGENTE, S.L.</strong><br>
+          cuadly.com · hola@cuadly.com
+        </div>
+
+      </div>
     </div>
 
   </div>
