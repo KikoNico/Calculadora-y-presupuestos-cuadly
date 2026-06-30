@@ -116,10 +116,9 @@ function isFormValid() {
     const empleados = parseInt(document.getElementById('empleados').value);
     return !!(nombre && contacto && empleados > 0);
   }
-  const nombre    = document.getElementById('nombre-grupo').value.trim();
   const contacto  = document.getElementById('contacto-grupo').value.trim();
   const validRows = getValidGroupRows();
-  return !!(nombre && contacto && validRows.length >= 2);
+  return !!(contacto && validRows.length >= 2);
 }
 
 function getValidGroupRows() {
@@ -300,12 +299,12 @@ function generatePDF() {
   const plan = currentPlan;
   const result = calculatePrice(residencias, plan);
 
-  const nombre   = currentMode === 'individual'
-    ? document.getElementById('nombre').value.trim()
-    : document.getElementById('nombre-grupo').value.trim();
   const contacto = currentMode === 'individual'
     ? document.getElementById('contacto').value.trim()
     : document.getElementById('contacto-grupo').value.trim();
+  const nombre   = currentMode === 'individual'
+    ? document.getElementById('nombre').value.trim()
+    : (document.getElementById('nombre-grupo').value.trim() || contacto);
   const email    = currentMode === 'individual'
     ? document.getElementById('email').value.trim()
     : document.getElementById('email-grupo').value.trim();
