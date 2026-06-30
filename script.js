@@ -111,10 +111,9 @@ document.getElementById('add-residencia').addEventListener('click', addResidenci
 
 function isFormValid() {
   if (currentMode === 'individual') {
-    const nombre    = document.getElementById('nombre').value.trim();
     const contacto  = document.getElementById('contacto').value.trim();
     const empleados = parseInt(document.getElementById('empleados').value);
-    return !!(nombre && contacto && empleados > 0);
+    return !!(contacto && empleados > 0);
   }
   const contacto  = document.getElementById('contacto-grupo').value.trim();
   const validRows = getValidGroupRows();
@@ -304,7 +303,7 @@ function generatePDF() {
     : document.getElementById('contacto-grupo').value.trim();
   const nombre   = currentMode === 'individual'
     ? document.getElementById('nombre').value.trim()
-    : (document.getElementById('nombre-grupo').value.trim() || contacto);
+    : document.getElementById('nombre-grupo').value.trim();
   const email    = currentMode === 'individual'
     ? document.getElementById('email').value.trim()
     : document.getElementById('email-grupo').value.trim();
@@ -317,7 +316,7 @@ function generatePDF() {
     .toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
 
   // Poblar portada (página 1)
-  document.getElementById('pdf-cover-client').textContent = `Cuadly - ${nombre}`;
+  document.getElementById('pdf-cover-client').textContent = nombre ? `Cuadly - ${nombre}` : '';
 
   // Poblar cabecera y datos cliente (página 2)
   document.getElementById('pdf-fecha').textContent = `${fecha} · Válido hasta: ${validez}`;
