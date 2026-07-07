@@ -328,7 +328,10 @@ function generatePDF() {
   // Poblar página 2 (desglose + tabla planes)
   document.getElementById('pdf-plan-tabla').innerHTML = buildPlanTablaHTML(result);
 
-  // Poblar página 3 (firmante)
+  // Poblar página 3 (condiciones generales)
+  document.getElementById('pdf-fecha-cg').textContent          = fecha;
+
+  // Poblar página 4 (firmante)
   document.getElementById('pdf-fecha-p3').textContent          = fecha;
   document.getElementById('pdf-firmante-empresa').textContent  = nombre;
   document.getElementById('pdf-firmante-email').textContent    = email;
