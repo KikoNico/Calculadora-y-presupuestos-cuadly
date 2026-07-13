@@ -131,6 +131,11 @@
           </div>
         </div>
 
+        <div class="field-group">
+          <label for="inicio-servicio">Inicio del servicio</label>
+          <input type="date" id="inicio-servicio">
+        </div>
+
       </section>
 
       <!-- Panel de resultados -->
@@ -203,24 +208,50 @@
         </div>
       </div>
 
-      <!-- Desglose de precios -->
-      <div style="margin-bottom:14px;">
-        <div style="font-size:10px; font-weight:700; text-transform:uppercase;
-                    letter-spacing:.08em; color:#94a3b8; margin-bottom:10px;">Desglose de precios</div>
-        <div id="pdf-breakdown"></div>
+      <!-- Introducción a las modalidades de pago -->
+      <div style="font-size:11.5px; color:#374151; line-height:1.55; margin-bottom:14px;">
+        Cuadly propone <strong>3 modalidades de pago</strong>: mensual, semestral y anual. Al elegir el plan
+        semestral se disfruta de <strong>1 mes gratis</strong>, y con el plan anual de <strong>2 meses
+        gratis</strong> sobre la tarifa mensual. Todos los clientes pueden cambiar de un plan mensual a uno
+        semestral o anual contactando con el servicio de atención al cliente.
       </div>
 
-      <!-- Base mensual de referencia -->
-      <div id="pdf-total-section"
-           style="background:#eff6ff; border-radius:8px; padding:14px 18px;
-                  margin-bottom:16px; border-left:4px solid #2B2FDE;"></div>
-
-      <!-- Comparativa de planes -->
+      <!-- Opciones de pago -->
       <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
-                  color:#94a3b8; margin-bottom:8px;">Opciones de pago</div>
-      <div id="pdf-plan-tabla" style="margin-bottom:4px;"></div>
-      <div style="font-size:10px; color:#64748b; margin-bottom:16px;">
-        Los precios indicados no incluyen IVA (21% o tipo impositivo aplicable).
+                  color:#94a3b8; margin-bottom:10px;">Opciones de pago</div>
+      <div id="pdf-planes"></div>
+
+      <!-- Cómo se calcula el precio -->
+      <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
+                  color:#94a3b8; margin:16px 0 8px;">Cómo se calcula el precio</div>
+      <table width="100%" style="border-collapse:collapse; margin-bottom:6px;">
+        <thead><tr>
+          <th style="padding:6px 8px; border:1px solid #cbd5e1; background:#f8fafc; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#64748b; text-align:left;">Tramo</th>
+          <th style="padding:6px 8px; border:1px solid #cbd5e1; background:#f8fafc; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#64748b; text-align:left;">Empleados</th>
+          <th style="padding:6px 8px; border:1px solid #cbd5e1; background:#f8fafc; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#64748b; text-align:right;">Precio por empleado / mes</th>
+        </tr></thead>
+        <tbody>
+          <tr>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:11px;">Tramo 1</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:11px;">Del 1 al 20</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:11px; text-align:right;">3,00 €</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:11px;">Tramo 2</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:11px;">Del 21 al 50</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:11px; text-align:right;">2,50 €</td>
+          </tr>
+          <tr>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:11px;">Tramo 3</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:11px;">A partir del 51</td>
+            <td style="padding:6px 8px; border:1px solid #cbd5e1; font-size:11px; text-align:right;">2,00 €</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="font-size:10px; color:#64748b; margin-bottom:16px; line-height:1.5;">
+        El precio es acumulativo por tramos: cada empleado se factura al precio del tramo que le corresponde.
+        Se aplica un <strong>mínimo mensual de 49 €</strong> por centro. Los precios indicados no incluyen IVA
+        (21% o tipo impositivo aplicable).
       </div>
 
       <!-- Formación -->
@@ -304,7 +335,7 @@
         <div style="font-size:11px; color:#374151; line-height:1.65;">
           Cuando la presente Propuesta comprende varias residencias bajo una misma titularidad, esta
           Propuesta constituye las Condiciones Particulares del contrato de grupo previstas en los
-          Términos y Condiciones, incluyendo el descuento de grupo detallado en el desglose de precios.
+          Términos y Condiciones, incluyendo el descuento de grupo detallado en las opciones de pago.
         </div>
       </div>
 

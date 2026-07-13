@@ -153,6 +153,37 @@ function escHtml(str) {
     .replace(/"/g, '&quot;');
 }
 
+// ── Fechas de vigencia ────────────────────────────────────────────────────────
+
+function getInicioServicio() {
+  const value = document.getElementById('inicio-servicio').value;
+  if (!value) return new Date();
+  const [y, m, d] = value.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
+// Suma meses conservando el día; si el mes destino es más corto, se ajusta al último día
+function addMonths(date, meses) {
+  const d = new Date(date.getFullYear(), date.getMonth() + meses, 1);
+  const ultimoDia = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+  d.setDate(Math.min(date.getDate(), ultimoDia));
+  return d;
+}
+
+function fechaFin(inicio, meses) {
+  const fin = addMonths(inicio, meses);
+  // Si el mes destino era más corto, addMonths ya devolvió su último día: ese es el fin
+  if (fin.getDate() !== inicio.getDate()) return fin;
+  fin.setDate(fin.getDate() - 1);
+  return fin;
+}
+
+function fmtFecha(date) {
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  return `${dd}-${mm}-${date.getFullYear()}`;
+}
+
 function periodText(plan, total) {
   if (plan === 'mensual')   return '/mes';
   if (plan === 'semestral') return `/6 meses &middot; ${fmt(total / 6)}/mes`;
@@ -211,9 +242,9 @@ function renderIndividual(result, emp, plan) {
   </div>`;
 
   const allPlans = [
-    { key: 'mensual',   label: 'Mensual',   mult: 1,    badge: '',              period: '/mes'    },
-    { key: 'semestral', label: 'Semestral', mult: 5.4,  badge: '1 mes gratis',  period: '/6 meses' },
-    { key: 'anual',     label: 'Anual',     mult: 9.96, badge: '2 meses gratis', period: '/año'   }
+    { key: 'mensual',   label: 'Mensual',   mult: PLAN_MULTIPLIERS.mensual,   badge: '',               period: '/mes'     },
+    { key: 'semestral', label: 'Semestral', mult: PLAN_MULTIPLIERS.semestral, badge: '1 mes gratis',   period: '/6 meses' },
+    { key: 'anual',     label: 'Anual',     mult: PLAN_MULTIPLIERS.anual,     badge: '2 meses gratis', period: '/año'     }
   ];
 
   html += '<div class="plan-comparison"><h3>Comparar planes</h3>';
@@ -270,9 +301,9 @@ function renderGroup(result, residencias) {
   </div>`;
 
   const allPlans = [
-    { key: 'mensual',   label: 'Mensual',   mult: 1,    badge: '',               period: '/mes'    },
-    { key: 'semestral', label: 'Semestral', mult: 5.4,  badge: '1 mes gratis',   period: '/6 meses' },
-    { key: 'anual',     label: 'Anual',     mult: 9.96, badge: '2 meses gratis', period: '/año'    }
+    { key: 'mensual',   label: 'Mensual',   mult: PLAN_MULTIPLIERS.mensual,   badge: '',               period: '/mes'     },
+    { key: 'semestral', label: 'Semestral', mult: PLAN_MULTIPLIERS.semestral, badge: '1 mes gratis',   period: '/6 meses' },
+    { key: 'anual',     label: 'Anual',     mult: PLAN_MULTIPLIERS.anual,     badge: '2 meses gratis', period: '/año'     }
   ];
 
   html += '<div class="plan-comparison"><h3>Comparar planes</h3>';
@@ -325,8 +356,8 @@ function generatePDF() {
   document.getElementById('pdf-cliente-email').textContent    = email;
   document.getElementById('pdf-cliente-tel').textContent      = tel;
 
-  // Poblar página 2 (desglose + tabla planes)
-  document.getElementById('pdf-plan-tabla').innerHTML = buildPlanTablaHTML(result);
+  // Poblar página 2 (opciones de pago)
+  document.getElementById('pdf-planes').innerHTML = buildPagoTablasHTML(result, getInicioServicio());
 
   // Poblar página 3 (condiciones generales)
   document.getElementById('pdf-fecha-cg').textContent          = fecha;
@@ -338,24 +369,6 @@ function generatePDF() {
   document.getElementById('pdf-firmante-contacto').textContent = contacto;
   document.getElementById('pdf-firmante-fecha').textContent    = fecha;
 
-  // Poblar desglose
-  const breakdownEl = document.getElementById('pdf-breakdown');
-  breakdownEl.innerHTML = buildBreakdownHTML(result, residencias);
-
-  // Base mensual de referencia (sin plan específico)
-  const discountNote = result.groupDiscount > 0
-    ? `<span style="color:#059669;margin-left:10px;font-size:12px;">Descuento de grupo (${residencias.length} res.): −${Math.round(result.groupDiscount * 100)}% aplicado en tabla inferior</span>`
-    : '';
-
-  document.getElementById('pdf-total-section').innerHTML = `
-    <div style="font-size:12px;color:#64748b;margin-bottom:4px;">Precio mensual base</div>
-    <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;">
-      <span style="font-size:30px;font-weight:700;color:#1e3a5f;line-height:1.1;">${fmt(result.totalMensual)}</span>
-      <span style="font-size:13px;color:#64748b;">/mes · consulta las opciones de pago en la tabla</span>
-    </div>
-    ${discountNote}
-  `;
-
   document.getElementById('pdf-template').style.display = 'block';
 
   window.addEventListener('afterprint', function restore() {
@@ -366,96 +379,98 @@ function generatePDF() {
   window.print();
 }
 
-function buildBreakdownHTML(result, residencias) {
-  const tdStyle = 'padding:6px 0;';
-  const thStyle = 'padding:5px 0;font-size:11px;color:#64748b;text-transform:uppercase;letter-spacing:.05em;font-weight:700;border-bottom:1px solid #e2e8f0;';
-
-  if (currentMode === 'individual') {
-    const emp  = residencias[0].empleados;
-    const t1   = Math.min(emp, 20);
-    const t2   = Math.max(0, Math.min(emp - 20, 30));
-    const t3   = Math.max(0, emp - 50);
-    const min  = (t1 * 3 + t2 * 2.5 + t3 * 2) < 49;
-
-    let rows = `<tr><td style="${tdStyle}">${t1} empleados × 3,00 €</td><td style="${tdStyle};text-align:right;">${fmt(t1 * 3)}</td></tr>`;
-    if (t2 > 0) rows += `<tr><td style="${tdStyle}">${t2} empleados × 2,50 € (tramo 2)</td><td style="${tdStyle};text-align:right;">${fmt(t2 * 2.5)}</td></tr>`;
-    if (t3 > 0) rows += `<tr><td style="${tdStyle}">${t3} empleados × 2,00 € (tramo 3)</td><td style="${tdStyle};text-align:right;">${fmt(t3 * 2)}</td></tr>`;
-    if (min)    rows += `<tr><td style="${tdStyle};color:#64748b;font-style:italic;" colspan="2">Mínimo mensual aplicado</td></tr>`;
-    rows += `<tr style="font-weight:700;border-top:2px solid #e2e8f0;">
-      <td style="padding-top:9px;">Total mensual</td>
-      <td style="padding-top:9px;text-align:right;">${fmt(result.totalMensual)}</td>
-    </tr>`;
-
-    return `<table width="100%" style="border-collapse:collapse;font-size:14px;">
-      <thead><tr>
-        <th style="${thStyle}">Concepto</th>
-        <th style="${thStyle};text-align:right;">Importe</th>
-      </tr></thead>
-      <tbody>${rows}</tbody>
-    </table>`;
-  }
-
-  // Modo grupo
-  let rows = result.lineItems.map(item =>
-    `<tr>
-      <td style="${tdStyle}">${escHtml(item.nombre)}</td>
-      <td style="${tdStyle};text-align:center;">${item.empleados}</td>
-      <td style="${tdStyle};text-align:right;">${fmt(item.mensual)}</td>
-    </tr>`
-  ).join('');
-  rows += `<tr style="font-weight:700;border-top:2px solid #e2e8f0;">
-    <td style="padding-top:9px;" colspan="2">Subtotal mensual</td>
-    <td style="padding-top:9px;text-align:right;">${fmt(result.totalMensual)}</td>
-  </tr>`;
-
-  return `<table width="100%" style="border-collapse:collapse;font-size:14px;">
-    <thead><tr>
-      <th style="${thStyle}">Residencia</th>
-      <th style="${thStyle};text-align:center;">Emp.</th>
-      <th style="${thStyle};text-align:right;">€/mes</th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
-  </table>`;
-}
-
-// ── Helpers PDF páginas 3 y 4 ────────────────────────────────────────────────
-
-function buildPlanTablaHTML(result) {
+// Tres tablas (Mensual / Semestral / Anual) con vigencia, meses gratis y total a desembolsar
+function buildPagoTablasHTML(result, inicio) {
   const planes = [
-    { label: 'Mensual',   mult: 1,    meses: 1,  periodo: '/mes',     beneficio: 'Sin compromiso' },
-    { label: 'Semestral', mult: 5.4,  meses: 6,  periodo: '/6 meses', beneficio: '1 mes gratis'   },
-    { label: 'Anual',     mult: 9.96, meses: 12, periodo: '/año',     beneficio: '2 meses gratis' }
+    { key: 'mensual',   label: 'Pago Mensual',   beneficio: 'Sin compromiso', color: '#64748b' },
+    { key: 'semestral', label: 'Pago Semestral', beneficio: '1 mes gratis',   color: '#059669' },
+    { key: 'anual',     label: 'Pago Anual',     beneficio: '2 meses gratis', color: '#059669' }
   ];
-  const thStyle = 'padding:7px 10px; background:#f8fafc; border:1px solid #e2e8f0; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:#94a3b8; text-align:left;';
-  const td      = 'padding:8px 10px; border:1px solid #e2e8f0; font-size:12px;';
+  const th  = 'padding:6px 8px; border:1px solid #cbd5e1; background:#f8fafc; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:#64748b; text-align:left;';
+  const td  = 'padding:6px 8px; border:1px solid #cbd5e1; font-size:11px;';
+  const tdR = td + ' text-align:right;';
+  const verde = ' color:#059669;';
 
-  const groupHeader = result.groupDiscount > 0
-    ? `<div style="font-size:11px;color:#059669;margin-bottom:8px;">Descuento de grupo (${Math.round(result.groupDiscount * 100)}%) incluido en todos los planes</div>`
-    : '';
+  return planes.map(p => {
+    const meses  = MESES_PLAN[p.key];
+    const gratis = mesesGratis(p.key);
+    const desde  = fmtFecha(inicio);
+    const hasta  = fmtFecha(fechaFin(inicio, meses));
 
-  const rows = planes.map(p => {
-    const total  = result.totalMensual * p.mult * (1 - result.groupDiscount);
-    const porMes = fmt(total / p.meses);
-    return `<tr>
-      <td style="${td}">${p.label}</td>
-      <td style="${td}">${porMes}/mes</td>
-      <td style="${td} text-align:right;">${fmt(total)} ${p.periodo}</td>
-      <td style="${td}"><span style="color:#059669;font-size:11px;">${p.beneficio}</span></td>
-    </tr>`;
+    // Las filas muestran el precio íntegro del periodo; los descuentos se restan debajo
+    const rows = result.lineItems.map(item => `<tr>
+      <td style="${td}">${currentMode === 'individual' ? 'Cuadly' : escHtml(item.nombre)}</td>
+      <td style="${td}">${desde}</td>
+      <td style="${td}">${hasta}</td>
+      <td style="${tdR}">${item.empleados}</td>
+      <td style="${tdR}">${fmt(item.mensual * meses)}</td>
+    </tr>`).join('');
+
+    const bruto        = result.totalMensual * meses;
+    const ahorroGratis = result.totalMensual * gratis;
+    const trasGratis   = bruto - ahorroGratis;
+    const ahorroGrupo  = trasGratis * result.groupDiscount;
+    const total        = trasGratis - ahorroGrupo;
+
+    let extra = '';
+    if (gratis > 0) {
+      extra += `<tr>
+        <td style="${td}" colspan="4">Precio sin descuento (${meses} meses)</td>
+        <td style="${tdR}">${fmt(bruto)}</td>
+      </tr>
+      <tr>
+        <td style="${td}${verde}">${gratis === 1 ? '1 mes gratis' : `${gratis} meses gratis`}
+          <span style="color:#64748b;">· solo se facturan ${meses - gratis} de ${meses} meses</span></td>
+        <td style="${td}" colspan="3"></td>
+        <td style="${tdR}${verde}">−${fmt(ahorroGratis)}</td>
+      </tr>`;
+    }
+    if (result.groupDiscount > 0) {
+      extra += `<tr>
+        <td style="${td}${verde}" colspan="4">Descuento de grupo (${result.lineItems.length} residencias) · −${Math.round(result.groupDiscount * 100)}%</td>
+        <td style="${tdR}${verde}">−${fmt(ahorroGrupo)}</td>
+      </tr>`;
+    }
+
+    const ahorroTotal = ahorroGratis + ahorroGrupo;
+    const pie = ahorroTotal > 0
+      ? `<div style="font-size:10.5px; color:#059669; font-weight:600; margin-top:4px;">
+           Ahorro total frente al precio sin descuento: ${fmt(ahorroTotal)}
+         </div>`
+      : '';
+
+    return `<div style="margin-bottom:12px;">
+      <div style="font-size:12px; font-weight:700; color:#1e293b; margin-bottom:5px;">
+        ${p.label}
+        <span style="font-weight:600; font-size:11px; margin-left:8px; color:${p.color};">${p.beneficio}</span>
+      </div>
+      <table width="100%" style="border-collapse:collapse;">
+        <thead><tr>
+          <th style="${th}">Concepto</th>
+          <th style="${th}">Fecha de inicio</th>
+          <th style="${th}">Fecha de finalización</th>
+          <th style="${th} text-align:right;">Empleados</th>
+          <th style="${th} text-align:right;">Importe</th>
+        </tr></thead>
+        <tbody>
+          ${rows}
+          ${extra}
+          <tr>
+            <td style="${td} background:#f8fafc; font-weight:700;" colspan="4">Total a pagar</td>
+            <td style="${tdR} background:#f8fafc; font-weight:700;">${fmt(total)}</td>
+          </tr>
+        </tbody>
+      </table>
+      ${pie}
+    </div>`;
   }).join('');
-
-  return `${groupHeader}<table width="100%" style="border-collapse:collapse;">
-    <thead><tr>
-      <th style="${thStyle}">Plan</th>
-      <th style="${thStyle}">€/mes</th>
-      <th style="${thStyle} text-align:right;">Total período</th>
-      <th style="${thStyle}">Beneficio</th>
-    </tr></thead>
-    <tbody>${rows}</tbody>
-  </table>`;
 }
 
 // ── Inicialización ────────────────────────────────────────────────────────────
+
+const hoy = new Date();
+document.getElementById('inicio-servicio').value =
+  `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
 
 renderTable();
 updateResults();
