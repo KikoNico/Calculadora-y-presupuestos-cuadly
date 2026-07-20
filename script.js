@@ -343,7 +343,7 @@ function generatePDF() {
     : document.getElementById('telefono-grupo').value.trim();
 
   const fecha   = new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
-  const validez = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+  const validez = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
     .toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
 
   // Poblar portada (página 1)
