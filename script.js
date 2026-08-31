@@ -34,10 +34,10 @@ function setMode(mode) {
 }
 
 function resetForm() {
-  ['nombre', 'contacto', 'email', 'telefono', 'empleados'].forEach(id => {
+  ['nombre', 'contacto', 'cargo', 'email', 'telefono', 'empleados'].forEach(id => {
     document.getElementById(id).value = '';
   });
-  ['nombre-grupo', 'contacto-grupo', 'email-grupo', 'telefono-grupo'].forEach(id => {
+  ['nombre-grupo', 'contacto-grupo', 'cargo-grupo', 'email-grupo', 'telefono-grupo'].forEach(id => {
     document.getElementById(id).value = '';
   });
   nextId = 1;
@@ -101,11 +101,17 @@ document.getElementById('add-residencia').addEventListener('click', addResidenci
 
 // ── Listeners de inputs individuales ─────────────────────────────────────────
 
-['nombre', 'contacto', 'email', 'telefono', 'empleados'].forEach(id =>
+['nombre', 'contacto', 'cargo', 'email', 'telefono', 'empleados'].forEach(id =>
   document.getElementById(id).addEventListener('input', updateResults));
 
-['nombre-grupo', 'contacto-grupo', 'email-grupo', 'telefono-grupo'].forEach(id =>
+['nombre-grupo', 'contacto-grupo', 'cargo-grupo', 'email-grupo', 'telefono-grupo'].forEach(id =>
   document.getElementById(id).addEventListener('input', updateResults));
+
+// Campos comunes a ambos modos
+['titular', 'titular-nif'].forEach(id =>
+  document.getElementById(id).addEventListener('input', updateResults));
+
+document.getElementById('descuento-piloto').addEventListener('change', updateResults);
 
 // ── Validación del formulario ─────────────────────────────────────────────────
 
@@ -219,6 +225,8 @@ function updateResults() {
 function renderIndividual(result, emp, plan) {
   const planLabels = { mensual: 'Mensual', semestral: 'Semestral', anual: 'Anual' };
   const planBadges = { mensual: '', semestral: '1 mes gratis', anual: '2 meses gratis' };
+  const dtoPiloto  = pilotoDiscount();
+  const totalPeriodo = result.totalPeriodo * (1 - dtoPiloto);
 
   const t1emp = Math.min(emp, 20);
   const t2emp = Math.max(0, Math.min(emp - 20, 30));
@@ -233,11 +241,18 @@ function renderIndividual(result, emp, plan) {
   html += `<div class="breakdown-row total"><span>Total mensual</span><span>${fmt(result.totalMensual)}</span></div>`;
   html += '</div>';
 
+  if (dtoPiloto > 0) {
+    html += `<div class="discount-block">
+      <div class="discount-block-title">Descuento residencia piloto: −${Math.round(dtoPiloto * 100)}%</div>
+      <div>Ahorro ${planLabels[plan].toLowerCase()}: ${fmt(result.totalPeriodo * dtoPiloto)}</div>
+    </div>`;
+  }
+
   const badge = planBadges[plan];
   html += `<div class="plan-summary">
     <div class="plan-summary-label">${planLabels[plan]}</div>
-    <div class="plan-summary-price">${fmt(result.totalPeriodo)}</div>
-    <div class="plan-summary-period">${periodText(plan, result.totalPeriodo)}</div>
+    <div class="plan-summary-price">${fmt(totalPeriodo)}</div>
+    <div class="plan-summary-period">${periodText(plan, totalPeriodo)}</div>
     ${badge ? `<div class="plan-summary-badge">${badge}</div>` : ''}
   </div>`;
 
@@ -249,7 +264,7 @@ function renderIndividual(result, emp, plan) {
 
   html += '<div class="plan-comparison"><h3>Comparar planes</h3>';
   allPlans.forEach(p => {
-    const total = result.totalMensual * p.mult;
+    const total = result.totalMensual * p.mult * (1 - dtoPiloto);
     const active = p.key === plan;
     html += `<div class="plan-row${active ? ' active' : ''}" onclick="selectPlan('${p.key}')">
       <span class="plan-row-name">${p.label}${p.badge ? `<span class="badge-small">${p.badge}</span>` : ''}</span>
@@ -269,6 +284,8 @@ function renderGroup(result, residencias) {
   const plan = result.plan;
   const planLabels = { mensual: 'Mensual', semestral: 'Semestral', anual: 'Anual' };
   const planBadges = { mensual: '', semestral: '1 mes gratis', anual: '2 meses gratis' };
+  const dtoPiloto  = pilotoDiscount();
+  const totalPeriodo = result.totalPeriodo * (1 - dtoPiloto);
 
   let html = '<div class="result-breakdown"><h3>Residencias del grupo</h3>';
   html += '<table class="group-table"><thead><tr><th>Residencia</th><th>Emp.</th><th class="right">€/mes</th></tr></thead><tbody>';
@@ -292,11 +309,18 @@ function renderGroup(result, residencias) {
     </div>`;
   }
 
+  if (dtoPiloto > 0) {
+    html += `<div class="discount-block">
+      <div class="discount-block-title">Descuento residencia piloto: −${Math.round(dtoPiloto * 100)}%</div>
+      <div>Ahorro ${planLabels[plan].toLowerCase()}: ${fmt(result.totalPeriodo * dtoPiloto)}</div>
+    </div>`;
+  }
+
   const badge = planBadges[plan];
   html += `<div class="plan-summary">
     <div class="plan-summary-label">${planLabels[plan]}</div>
-    <div class="plan-summary-price">${fmt(result.totalPeriodo)}</div>
-    <div class="plan-summary-period">${periodText(plan, result.totalPeriodo)}</div>
+    <div class="plan-summary-price">${fmt(totalPeriodo)}</div>
+    <div class="plan-summary-period">${periodText(plan, totalPeriodo)}</div>
     ${badge ? `<div class="plan-summary-badge">${badge}</div>` : ''}
   </div>`;
 
@@ -308,7 +332,7 @@ function renderGroup(result, residencias) {
 
   html += '<div class="plan-comparison"><h3>Comparar planes</h3>';
   allPlans.forEach(p => {
-    const total = result.totalMensual * p.mult * (1 - result.groupDiscount);
+    const total = result.totalMensual * p.mult * (1 - result.groupDiscount) * (1 - dtoPiloto);
     const active = p.key === plan;
     html += `<div class="plan-row${active ? ' active' : ''}" onclick="selectPlan('${p.key}')">
       <span class="plan-row-name">${p.label}${p.badge ? `<span class="badge-small">${p.badge}</span>` : ''}</span>
@@ -329,12 +353,19 @@ function generatePDF() {
   const plan = currentPlan;
   const result = calculatePrice(residencias, plan);
 
-  const contacto = currentMode === 'individual'
-    ? document.getElementById('contacto').value.trim()
-    : document.getElementById('contacto-grupo').value.trim();
+  // La propuesta se dirige al centro (o al grupo). El titular es solo la identidad legal
+  // del cliente: si no se conoce, sus huecos salen en blanco para rellenar a mano.
+  const titular  = document.getElementById('titular').value.trim();
+  const nif      = document.getElementById('titular-nif').value.trim();
   const nombre   = currentMode === 'individual'
     ? document.getElementById('nombre').value.trim()
     : document.getElementById('nombre-grupo').value.trim();
+  const contacto = currentMode === 'individual'
+    ? document.getElementById('contacto').value.trim()
+    : document.getElementById('contacto-grupo').value.trim();
+  const cargo    = currentMode === 'individual'
+    ? document.getElementById('cargo').value.trim()
+    : document.getElementById('cargo-grupo').value.trim();
   const email    = currentMode === 'individual'
     ? document.getElementById('email').value.trim()
     : document.getElementById('email-grupo').value.trim();
@@ -364,10 +395,16 @@ function generatePDF() {
 
   // Poblar página 4 (firmante)
   document.getElementById('pdf-fecha-p3').textContent          = fecha;
-  document.getElementById('pdf-firmante-empresa').textContent  = nombre;
+  document.getElementById('pdf-firmante-empresa').textContent  = titular;
+  document.getElementById('pdf-firmante-nif').textContent      = nif;
   document.getElementById('pdf-firmante-email').textContent    = email;
   document.getElementById('pdf-firmante-contacto').textContent = contacto;
+  document.getElementById('pdf-firmante-cargo').textContent    = cargo;
   document.getElementById('pdf-firmante-fecha').textContent    = fecha;
+
+  // Poblar mandato SEPA (página 5): el deudor por defecto es la entidad titular
+  document.getElementById('pdf-sepa-deudor').textContent       = titular;
+  document.getElementById('pdf-sepa-nif').textContent          = nif;
 
   document.getElementById('pdf-template').style.display = 'block';
 
@@ -377,6 +414,14 @@ function generatePDF() {
   }, { once: true });
 
   window.print();
+}
+
+// Descuento de residencia piloto: se activa con el check del formulario.
+// Se aplica en cascada tras los meses gratis y el descuento de grupo.
+const DESCUENTO_PILOTO = 0.50;
+
+function pilotoDiscount() {
+  return document.getElementById('descuento-piloto').checked ? DESCUENTO_PILOTO : 0;
 }
 
 // Tres tablas (Mensual / Semestral / Anual) con vigencia, meses gratis y total a desembolsar
@@ -390,6 +435,7 @@ function buildPagoTablasHTML(result, inicio) {
   const td  = 'padding:6px 8px; border:1px solid #cbd5e1; font-size:11px;';
   const tdR = td + ' text-align:right;';
   const verde = ' color:#059669;';
+  const dtoPiloto = pilotoDiscount();
 
   return planes.map(p => {
     const meses  = MESES_PLAN[p.key];
@@ -399,7 +445,7 @@ function buildPagoTablasHTML(result, inicio) {
 
     // Las filas muestran el precio íntegro del periodo; los descuentos se restan debajo
     const rows = result.lineItems.map(item => `<tr>
-      <td style="${td}">${currentMode === 'individual' ? 'Cuadly' : escHtml(item.nombre)}</td>
+      <td style="${td}">${item.nombre ? escHtml(item.nombre) : 'Cuadly'}</td>
       <td style="${td}">${desde}</td>
       <td style="${td}">${hasta}</td>
       <td style="${tdR}">${item.empleados}</td>
@@ -410,7 +456,9 @@ function buildPagoTablasHTML(result, inicio) {
     const ahorroGratis = result.totalMensual * gratis;
     const trasGratis   = bruto - ahorroGratis;
     const ahorroGrupo  = trasGratis * result.groupDiscount;
-    const total        = trasGratis - ahorroGrupo;
+    const trasGrupo    = trasGratis - ahorroGrupo;
+    const ahorroPiloto = trasGrupo * dtoPiloto;
+    const total        = trasGrupo - ahorroPiloto;
 
     let extra = '';
     if (gratis > 0) {
@@ -432,7 +480,15 @@ function buildPagoTablasHTML(result, inicio) {
       </tr>`;
     }
 
-    const ahorroTotal = ahorroGratis + ahorroGrupo;
+    if (dtoPiloto > 0) {
+      extra += `<tr>
+        <td style="${td}${verde}" colspan="4">Descuento residencia piloto · −${Math.round(dtoPiloto * 100)}%
+          <span style="color:#64748b;">· por su colaboración desde el inicio del desarrollo de Cuadly</span></td>
+        <td style="${tdR}${verde}">−${fmt(ahorroPiloto)}</td>
+      </tr>`;
+    }
+
+    const ahorroTotal = ahorroGratis + ahorroGrupo + ahorroPiloto;
     const pie = ahorroTotal > 0
       ? `<div style="font-size:10.5px; color:#059669; font-weight:600; margin-top:4px;">
            Ahorro total frente al precio sin descuento: ${fmt(ahorroTotal)}

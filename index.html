@@ -33,15 +33,34 @@
       <section class="card form-card">
         <h2 class="card-title">Datos del cliente</h2>
 
+        <!-- Entidad titular: identidad legal del cliente, común a ambos modos.
+             Opcional: si no se conoce, el PDF deja los huecos en blanco para rellenar a mano. -->
+        <div class="field-group">
+          <label for="titular">Entidad titular <span class="field-note">(razón social, si se conoce)</span></label>
+          <input type="text" id="titular" placeholder="Ej: Residencial Los Pinos, S.L." autocomplete="organization">
+        </div>
+        <div class="field-group">
+          <label for="titular-nif">NIF de la entidad <span class="field-note">(si se conoce)</span></label>
+          <input type="text" id="titular-nif" placeholder="Ej: B12345678">
+          <p class="field-hint">Si los dejas vacíos, el contrato y el mandato SEPA salen con esos huecos en blanco
+            para que los rellene el cliente. En el SEPA el nombre debe coincidir con el titular de la cuenta.</p>
+        </div>
+
         <!-- Modo individual -->
         <div id="individual-fields">
           <div class="field-group">
-            <label for="nombre">Nombre de la empresa <span class="field-note">(opcional)</span></label>
+            <label for="nombre">Nombre del centro <span class="field-note">(opcional)</span></label>
             <input type="text" id="nombre" placeholder="Ej: Residencia Los Pinos" autocomplete="organization">
           </div>
-          <div class="field-group">
-            <label for="contacto">Persona de contacto *</label>
-            <input type="text" id="contacto" placeholder="Nombre y apellidos" autocomplete="name">
+          <div class="field-group field-row">
+            <div>
+              <label for="contacto">Persona de contacto *</label>
+              <input type="text" id="contacto" placeholder="Nombre y apellidos" autocomplete="name">
+            </div>
+            <div>
+              <label for="cargo">Cargo <span class="field-note">(opcional)</span></label>
+              <input type="text" id="cargo" placeholder="Ej: Directora" autocomplete="organization-title">
+            </div>
           </div>
           <div class="field-group field-row">
             <div>
@@ -79,12 +98,18 @@
         <!-- Modo grupo -->
         <div id="grupo-fields" style="display:none">
           <div class="field-group">
-            <label for="nombre-grupo">Nombre del grupo <span class="field-note">(opcional)</span></label>
+            <label for="nombre-grupo">Nombre del grupo o entidad <span class="field-note">(opcional)</span></label>
             <input type="text" id="nombre-grupo" placeholder="Ej: Grupo Vitalia" autocomplete="organization">
           </div>
-          <div class="field-group">
-            <label for="contacto-grupo">Persona de contacto *</label>
-            <input type="text" id="contacto-grupo" placeholder="Nombre y apellidos" autocomplete="name">
+          <div class="field-group field-row">
+            <div>
+              <label for="contacto-grupo">Persona de contacto *</label>
+              <input type="text" id="contacto-grupo" placeholder="Nombre y apellidos" autocomplete="name">
+            </div>
+            <div>
+              <label for="cargo-grupo">Cargo <span class="field-note">(opcional)</span></label>
+              <input type="text" id="cargo-grupo" placeholder="Ej: Director general" autocomplete="organization-title">
+            </div>
           </div>
           <div class="field-group field-row">
             <div>
@@ -134,6 +159,13 @@
         <div class="field-group">
           <label for="inicio-servicio">Inicio del servicio</label>
           <input type="date" id="inicio-servicio">
+        </div>
+
+        <div class="field-group field-check">
+          <label for="descuento-piloto">
+            <input type="checkbox" id="descuento-piloto">
+            Descuento de residencia piloto <span class="field-note">(−50%)</span>
+          </label>
         </div>
 
       </section>
@@ -392,8 +424,8 @@
         <tbody>
           <tr>
             <td style="padding:7px 12px; border:1px solid #e2e8f0; vertical-align:top;">
-              <div style="color:#94a3b8; font-size:10px; margin-bottom:2px;">Nombre de la empresa:</div>
-              <div id="pdf-firmante-empresa" style="font-weight:600;"></div>
+              <div style="color:#94a3b8; font-size:10px; margin-bottom:2px;">Razón social / Denominación:</div>
+              <div id="pdf-firmante-empresa" style="font-weight:600; border-bottom:1px solid #e2e8f0; min-height:16px;"></div>
             </td>
             <td style="padding:7px 12px; border:1px solid #e2e8f0; vertical-align:top;">
               <div style="color:#94a3b8; font-size:10px; margin-bottom:2px;">Nombre de la empresa:</div>
@@ -403,7 +435,7 @@
           <tr>
             <td style="padding:7px 12px; border:1px solid #e2e8f0; vertical-align:top;">
               <div style="color:#94a3b8; font-size:10px; margin-bottom:2px;">NIF:</div>
-              <div style="color:#cbd5e1; border-bottom:1px solid #e2e8f0; min-height:16px;"></div>
+              <div id="pdf-firmante-nif" style="border-bottom:1px solid #e2e8f0; min-height:16px;"></div>
             </td>
             <td style="padding:7px 12px; border:1px solid #e2e8f0; vertical-align:top;">
               <div style="color:#94a3b8; font-size:10px; margin-bottom:2px;">Código Fiscal:</div>
@@ -465,7 +497,7 @@
 
       <!-- Bloque de firma -->
       <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.08em;
-                  color:#94a3b8; margin-bottom:12px;">Firma del cliente</div>
+                  color:#94a3b8; margin-bottom:12px;">Firma</div>
       <table width="100%" style="border-collapse:collapse; font-size:12px;">
         <tbody>
           <tr>
@@ -475,7 +507,7 @@
             </td>
             <td style="width:50%; padding:10px 12px; border:1px solid #e2e8f0; vertical-align:top;">
               <div style="color:#94a3b8; font-size:10px; margin-bottom:4px;">Cargo / Título</div>
-              <div style="color:#cbd5e1;">___________________________</div>
+              <div id="pdf-firmante-cargo" style="font-weight:600; border-bottom:1px solid #e2e8f0; min-height:16px;"></div>
             </td>
           </tr>
           <tr>
@@ -576,13 +608,13 @@
             <tr>
               <td style="padding:5px 0; width:42%; color:#64748b; vertical-align:top;">Nombre / Nombres del deudor<br><em style="font-size:10px;">Name of the debtor(s)</em></td>
               <td style="padding:5px 0; vertical-align:top;">
-                <div style="border:1px solid #94a3b8; border-radius:4px; background:#f8fafc; height:22px; width:90%;"></div>
+                <div id="pdf-sepa-deudor" style="border:1px solid #94a3b8; border-radius:4px; background:#f8fafc; height:22px; width:90%; box-sizing:border-box; padding:3px 6px; font-size:11px; line-height:16px;"></div>
               </td>
             </tr>
             <tr>
               <td style="padding:5px 0; color:#64748b; vertical-align:top;">Número de IVA / NIF<br><em style="font-size:10px;">Debtor's VAT No</em></td>
               <td style="padding:5px 0; vertical-align:top;">
-                <div style="border:1px solid #94a3b8; border-radius:4px; background:#f8fafc; height:22px; width:90%;"></div>
+                <div id="pdf-sepa-nif" style="border:1px solid #94a3b8; border-radius:4px; background:#f8fafc; height:22px; width:90%; box-sizing:border-box; padding:3px 6px; font-size:11px; line-height:16px;"></div>
               </td>
             </tr>
             <tr>
@@ -673,7 +705,7 @@
                     padding:12px 16px; font-size:10px; color:#475569; text-align:center; line-height:1.6;">
           <strong style="color:#1e293b;">TECNOLOGIAS DE GESTION LABORAL INTELIGENTE, S.L.</strong><br>
           Domicilio: Calle Pensamiento 27, 3º Izq., 28010 Madrid — NIF B88983796<br>
-          Inscrita en el Registro Mercantil de Madrid, tomo ______, Folio ______, Hoja ____________, Inscripción ____
+          Inscrita en el Registro Mercantil de Madrid, Hoja M-891832, Inscripción 1ª
         </div>
 
       </div>
